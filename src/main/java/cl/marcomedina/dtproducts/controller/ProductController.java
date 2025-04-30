@@ -90,13 +90,11 @@ public class ProductController {
         	/* NOTE:
         	 * It's a mandatory practice to keep exception messages away from the front end!
         	 */
-        	LOGGER.error("Could not create product, please check log:" + e.getMessage());
+        	LOGGER.error("Could not create product:" + e.getMessage());
         	
             return 
             	ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             		.body("Could not create product, please check log. ");
-            
-            
         }
     }
 
@@ -128,23 +126,27 @@ public class ProductController {
             }
 
             Product updatedProduct = foundProduct.get();
-            
-            priceRepository.deleteAll(updatedProduct.getPrices());
 
-            updatedProduct.setName(request.getName());
-            updatedProduct.setColors(colors);
-            updatedProduct.setPrices(prices);
-
-            productRepository.save(updatedProduct);
+	         priceRepository.deleteAll(updatedProduct.getPrices());
+	
+	         for (Price price : prices) {
+	             price.setProduct(updatedProduct);
+	         }
+	
+	         updatedProduct.setName(request.getName());
+	         updatedProduct.setColors(colors);
+	         updatedProduct.setPrices(prices);
+	
+	         productRepository.save(updatedProduct);
 
             LOGGER.info("Product updated successfully. ID: " + updatedProduct.getId());
             
             return ResponseEntity.ok().body("Product updated successfully. ID: " + updatedProduct.getId());
         } catch (Exception e) {
-        	LOGGER.error("Could not create product, please check log,");
+        	LOGGER.error("Could not update product: " + e.getMessage());
         	
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Could not update product: " + e.getMessage());
+                .body("Could not create product, please check log.");
         }
     }
 
