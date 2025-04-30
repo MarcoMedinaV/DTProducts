@@ -151,16 +151,23 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (productRepository.existsById(id)) {
-            productRepository.deleteById(id);
-            LOGGER.info("Product deleted successfully. ID: " + id);
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+    	try {
+            if (productRepository.existsById(id)) {
+                productRepository.deleteById(id);
+                LOGGER.info("Product deleted successfully. ID: " + id);
+                
+                return ResponseEntity.ok().body("Product deleted successfully. ID: " + id);
+            }
             
-            return ResponseEntity.ok().build();
+            LOGGER.info("Product deletion attempt, invalid ID was used: " + id);
+            
+            return ResponseEntity.notFound().build();    		
+        } catch (Exception e) {
+        	LOGGER.error("Could not update product: " + e.getMessage());
+        	
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Could not create product, please check log.");
         }
-        
-        LOGGER.info("Product deletion attempt, invalid ID was used: " + id);
-        
-        return ResponseEntity.notFound().build();
     }
 }
