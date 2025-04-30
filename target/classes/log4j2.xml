@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+
+	<Properties>
+		<Property name="log-path">C:/Logs_DTproducts/</Property>
+	</Properties>
+	
+	<Appenders>
+
+		<Console name="LogToConsole" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %c{1} - %msg%n" />
+		</Console>
+		
+		<RollingRandomAccessFile name="LogToRollingRandomAccessFile" fileName="${log-path}/DTproducts.log" filePattern="${log-path}/DTproducts-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout>
+				<pattern>%d{dd-MM-yyyy HH:mm:ss}- %c{1}: %m%n</pattern>
+			</PatternLayout>
+			<CronTriggeringPolicy schedule="0 0 0 * * ?" />
+			<DefaultRolloverStrategy>
+				<Delete basePath="${log-path}" maxDepth="2">
+					<IfFileName glob="*/DTproducts-*.log" />
+					<IfLastModified age="60d" />
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingRandomAccessFile>
+		
+        <RollingFile name="BitacoraTransbank" fileName="${log-path}/DTproducts.log"
+			filePattern="${log-path}/DTproducts-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="TRANSBANK" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout>
+				<pattern>%d{dd-MM-yyyy HH:mm:ss}- %c{1}: %m%n</pattern>
+			</PatternLayout>
+			<CronTriggeringPolicy schedule="0 0 0 * * ?" />
+			<DefaultRolloverStrategy>
+				<Delete basePath="${log-path}" maxDepth="2">
+					<IfFileName glob="*/DTproducts-*.log" />
+					<IfLastModified age="60d" />
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>		
+		
+	</Appenders>
+	
+	<Loggers>
+		<Logger name="cl.marcomedina.dtproducts" level="info" additivity="false">
+            <AppenderRef ref="LogToRollingRandomAccessFile"/>
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="LogToConsole"/>
+        </Root>
+	</Loggers>
+	
+</Configuration>
+     
